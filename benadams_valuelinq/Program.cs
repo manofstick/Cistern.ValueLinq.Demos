@@ -329,21 +329,27 @@ public partial class Program
 {
     const int AnyLoopCount = 10;
 
-    List<int> _list;
+    List<int> _benlist;
+    System.Collections.Generic.List<int> _list;
+    System.Collections.Generic.IEnumerable<int> _eList;
+
 
     public Program()
     {
-        _list = new List<int>();
+        _benlist = new List<int>();
+        _list = new System.Collections.Generic.List<int>();
         for (var i = 0; i < 10; i++)
         {
+            _benlist.Add(i);
             _list.Add(i);
         }
+        _eList = _list;
     }
 
     [BenchmarkCategory("Any"), Benchmark(OperationsPerInvoke = AnyLoopCount, Baseline = true, Description = "Linq")]
     public bool LinqAny()
     {
-        var list = _list;
+        var list = _benlist;
         var result = false;
         for (int i = 0; i < AnyLoopCount; i++)
         {
@@ -355,7 +361,7 @@ public partial class Program
     [BenchmarkCategory("Any"), Benchmark(OperationsPerInvoke = AnyLoopCount, Description = "ValueLinq")]
     public bool ValueLinqAny()
     {
-        var list = _list;
+        var list = _benlist;
         var result = false;
         for (int i = 0; i < AnyLoopCount; i++)
         {
@@ -367,17 +373,20 @@ public partial class Program
     [BenchmarkCategory("Count"), Benchmark(Baseline = true, Description = "Linq")]
     public int LinqAnyCount()
     {
-        return _list.Count();
+        return _benlist.Count();
     }
 
     [BenchmarkCategory("Count"), Benchmark(Description = "ValueLinq")]
     public int ValueLinqCount()
     {
-        return _list.Count<List<int>, List<int>.ValueEnumerator>();
+        return _benlist.Count<List<int>, List<int>.ValueEnumerator>();
     }
 
     public static void Main()
     {
+        var x = new Program();
+        x.CisternValueLinqAny();
+
 
         var summary = BenchmarkRunner.Run<Program>();
         //var list = new List<int>();
